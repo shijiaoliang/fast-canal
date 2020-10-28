@@ -1,0 +1,21 @@
+# Logger
+[logger]
+    Path        = "/data/site_log/canal/log"
+    Level       = "DEV" #DEV | PROD
+    Stdout      = true  #false
+
+#Sourse Database
+[source]
+    Addr = "xxx.mysql.rds.aliyuncs.com:3306"
+    User = "root"
+    Password = "xxxxx"
+    IncludeTableRegex = [
+        "db\\.table",
+    ]
+    [source.startPos]
+        Name = ""
+        Pos = 0
+
+#Notify
+[notify]
+    Urls = ["http://xxx.com/res-canal/canal"]
