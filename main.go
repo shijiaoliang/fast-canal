@@ -12,11 +12,11 @@ package main
 
 import (
 	"time"
+
+	"github.com/go-mysql-org/go-mysql/canal"
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/net/ghttp"
 	"github.com/gogf/gf/os/grpool"
-	"github.com/siddontang/go-mysql/canal"
-	"github.com/siddontang/go-mysql/mysql"
 )
 
 var httpClient *ghttp.Client
@@ -64,12 +64,16 @@ func (h *myEventHandler) OnRow(e *canal.RowsEvent) error {
 	g.Log().Info(ed)
 
 	//协程池复用-http通知
-	grpool.Add(func() {
+	err := grpool.Add(func() {
 		urls := g.Cfg().GetStrings("notify.Urls")
 		for _, url := range urls {
-			httpClient.PostContent(url, ed)
+			//httpClient.PostContent(url, ed)
+			g.Log().Info(url)
 		}
 	})
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -79,39 +83,22 @@ func (h *myEventHandler) String() string {
 }
 
 func main() {
-	//cfg
 	cfg := canal.NewDefaultConfig()
 	cfg.Addr = g.Cfg().GetString("source.Addr")
 	cfg.User = g.Cfg().GetString("source.User")
 	cfg.Password = g.Cfg().GetString("source.Password")
-	cfg.Dump.ExecutionPath = ""
-	cfg.IncludeTableRegex = g.Cfg().GetStrings("source.IncludeTableRegex")
 
-	//canal
-	c, _ := canal.NewCanal(cfg)
+	// We only care table canal_test in test db
+	cfg.Dump.Databases = g.Cfg().GetStrings("source.Databases")
+	cfg.Dump.Tables = g.Cfg().GetStrings("source.Tables")
+
+	c, err := canal.NewCanal(cfg)
+	if err != nil {
+		g.Log().Error(err)
+	}
+
 	c.SetEventHandler(&myEventHandler{})
 
-	//startPos
-	var startPos mysql.Position
-	var err error
-	startPosName := g.Cfg().GetString("source.startPos.Name")
-	startPosPos := g.Cfg().GetUint32("source.startPos.Pos")
-	if startPosName != "" && startPosPos > 0 {
-		startPos = mysql.Position{
-			Name: startPosName,
-			Pos:  startPosPos,
-		}
-	} else {
-		startPos, err = c.GetMasterPos()
-		if err != nil {
-			g.Log().Printf("getMasterPos err %v", err)
-			return
-		}
-	}
-
-	//run
-	err = c.RunFrom(startPos)
-	if err != nil {
-		g.Log().Printf("start fast-canal err %v", err)
-	}
+	// Start canal
+	c.Run()
 }
