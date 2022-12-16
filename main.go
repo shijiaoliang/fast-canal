@@ -88,10 +88,11 @@ func main() {
 	cfg.User = g.Cfg().GetString("source.User")
 	cfg.Password = g.Cfg().GetString("source.Password")
 
-	// We only care table canal_test in test db
+	cfg.Dump.ExecutionPath = ""
 	cfg.Dump.Databases = g.Cfg().GetStrings("source.Databases")
 	cfg.Dump.Tables = g.Cfg().GetStrings("source.Tables")
 
+	// new canal
 	c, err := canal.NewCanal(cfg)
 	if err != nil {
 		g.Log().Error(err)
