@@ -67,7 +67,7 @@ func (h *myEventHandler) OnRow(e *canal.RowsEvent) error {
 	err := grpool.Add(func() {
 		urls := g.Cfg().GetStrings("notify.Urls")
 		for _, url := range urls {
-			//httpClient.PostContent(url, ed)
+			httpClient.PostContent(url, ed)
 			g.Log().Info(url)
 		}
 	})
