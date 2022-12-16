@@ -4,16 +4,15 @@ fast-canal is fast and pretty used for sync mysql data to any where.
 
 ## Quick Start
 
-#### Create a run directory
-    mkdir fast-canal
+#### From MySql Latest Position
+    mysql> flush logs;
+
+#### Clone & Run
+    git clone https://github.com/shijiaoliang/fast-canal.git
     cd fast-canal
     vim config.toml
-
-#### Download release
-    fast-canal/release/fast-canal
-
-#### Run the backend
-    nohup ./fast-canal>/dev/null &
+    go mod tidy
+    go run main.go
 
 ## License
 

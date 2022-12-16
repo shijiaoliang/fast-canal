@@ -102,5 +102,5 @@ func main() {
 	c.SetEventHandler(&myEventHandler{})
 
 	// Start canal
-	c.Run()
+	c.RunFrom(c.SyncedPosition())
 }
