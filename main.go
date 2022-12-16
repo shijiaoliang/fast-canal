@@ -96,6 +96,7 @@ func main() {
 	c, err := canal.NewCanal(cfg)
 	if err != nil {
 		g.Log().Error(err)
+		return
 	}
 
 	c.SetEventHandler(&myEventHandler{})

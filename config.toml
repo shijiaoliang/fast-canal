@@ -9,9 +9,9 @@
     Addr = "localhost:3306"
     User = "root"
     Password = "123456"
-    Databases = ["dev"]
-    Tables = ["test"]
+    Databases = ["test"]
+    Tables = ["user"]
 
 #Notify
 [notify]
-    Urls = ["http://xxx.com/res-canal/canal"]
+    Urls = ["http://xxx.xxx"]
